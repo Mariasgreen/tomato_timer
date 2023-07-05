@@ -1,0 +1,1 @@
+!function(){"use strict";let t=0;const e=["default","important","so-so"];document.querySelector(".button-importance").addEventListener("click",(({target:s})=>{t+=1,t>=e.length&&(t=0);for(let n=0;n<e.length;n++)t===n?s.classList.add(e[n]):s.classList.remove(e[n])}))}();
