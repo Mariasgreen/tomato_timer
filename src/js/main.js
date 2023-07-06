@@ -2,7 +2,7 @@
 
 import '../scss/index.scss';
 
-
+import './task.js';
 
 
 let count = 0;
