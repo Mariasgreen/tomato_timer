@@ -2,8 +2,8 @@
 
 import '../scss/index.scss';
 
-
-
+import './task.js';
+import './timer.js';
 
 let count = 0;
 const imp = ['default', 'important', 'so-so']
