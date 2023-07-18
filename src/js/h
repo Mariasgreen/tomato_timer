@@ -1,0 +1,371 @@
+import '../scss/index.scss';
+/*
+import '../scss/index.scss';
+import './render.js';
+import './task.js';
+import './timer.js';
+*/
+
+let count = 0;
+const imp = ['default', 'important', 'so-so']
+document.querySelector('.button-importance').addEventListener('click', ({target}) => {
+  count += 1;
+  if (count >= imp.length) {
+    count = 0
+  }
+
+  for (let i = 0; i < imp.length; i++) {
+    if (count === i) {
+      target.classList.add(imp[i])
+    } else {
+      target.classList.remove(imp[i])
+    }
+  }
+})
+
+
+class TomatoTimer {
+  static instance;
+
+  constructor() {
+    if (TomatoTimer.instance) {
+      return TomatoTimer.instance;
+    }
+    TomatoTimer.instance = this;
+
+    this.time_to_complete = 25;
+    this.pause_time = 5;
+    this.long_pause_time = 15;
+    this.tasks = [];
+    this.active_task = null;
+
+    return this;
+  }
+
+  addTask(task) {
+    this.tasks.push(task);
+  }
+
+  activateTask(taskId) {
+    this.active_task = this.tasks.find(task => task.id === taskId);
+  }
+
+  runTask() {
+    if (this.active_task) {
+      console.log(`Running task: ${this.active_task.text}`);
+      // Add your logic to start the task timer and handle pauses
+    } else {
+      console.log("No active task.");
+    }
+  }
+}
+
+class Task {
+  constructor(text, importance) {
+    this.id = this.generateUniqueId();
+    this.text = text;
+    this.count = 0;
+    this.importance = importance;
+  }
+
+  generateUniqueId() {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  }
+}
+
+class ImportantTask extends Task {
+  constructor(text) {
+    super(text, 'important');
+  }
+}
+
+class StandardTask extends Task {
+  constructor(text) {
+    super(text, 'default');
+  }
+}
+
+class UnimportantTask extends Task {
+  constructor(text) {
+    super(text, 'so-so');
+  }
+}
+
+class RenderTomato {
+  constructor(container) {
+    this.container = container;
+  }
+
+  renderTaskList(tasks) {
+    const taskList = document.createElement('ul');
+    taskList.className = 'pomodoro-tasks__quest-tasks';
+    tasks.forEach(task => {
+      const taskItem = document.createElement('li');
+      taskItem.className = `pomodoro-tasks__list-task ${task.importance}`;
+      taskItem.innerHTML = `
+        <span class="count-number">${task.count}</span>
+        <button class="pomodoro-tasks__task-text">${task.text}</button>
+        <button class="pomodoro-tasks__task-button"></button>
+      `;
+      taskList.appendChild(taskItem);
+    });
+    this.container.appendChild(taskList);
+  }
+
+  renderTaskForm(addTaskHandler) {
+    const taskForm = document.createElement('form');
+    taskForm.className = 'task-form';
+    taskForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const taskNameInput = document.getElementById('task-name');
+      const taskName = taskNameInput.value;
+      addTaskHandler(taskName);
+      taskNameInput.value = '';
+    });
+
+    const taskNameInput = document.createElement('input');
+    taskNameInput.className = 'task-name input-primary';
+    taskNameInput.type = 'text';
+    taskNameInput.name = 'task-name';
+    taskNameInput.id = 'task-name';
+    taskNameInput.placeholder = 'Task name';
+
+    const importanceButton = document.createElement('button');
+    importanceButton.className = 'button button-importance default';
+    importanceButton.type = 'button';
+    importanceButton.setAttribute('aria-label', 'Set importance');
+
+    const addButton = document.createElement('button');
+    addButton.className = 'button button-primary task-form__add-button';
+    addButton.type = 'submit';
+    addButton.textContent = 'Add';
+
+    taskForm.appendChild(taskNameInput);
+    taskForm.appendChild(importanceButton);
+    taskForm.appendChild(addButton);
+    this.container.appendChild(taskForm);
+  }
+}
+
+class ControllerTomato {
+  constructor(timer, render) {
+    this.timer = timer;
+    this.render = render;
+    this.taskForm = document.querySelector('.task-form');
+    this.taskNameInput = document.getElementById('task-name');
+    this.taskList = document.querySelector('.pomodoro-tasks__quest-tasks');
+
+    this.taskForm.addEventListener('submit', this.handleAddTask.bind(this));
+  }
+
+  handleAddTask(event) {
+    event.preventDefault();
+    const taskName = this.taskNameInput.value;
+    const importanceClass = document.querySelector('.button-importance').classList;
+
+    let task;
+    if (importanceClass.contains('important')) {
+      task = new ImportantTask(taskName);
+    } else if (importanceClass.contains('so-so')) {
+      task = new UnimportantTask(taskName);
+    } else {
+      task = new StandardTask(taskName);
+    }
+
+    this.timer.addTask(task);
+    this.render.renderTaskList(this.timer.tasks);
+    this.taskNameInput.value = '';
+  }
+}
+
+// Usage example
+const timer = new TomatoTimer();
+const render = new RenderTomato(document.querySelector('.pomodoro-tasks__quest-tasks')); // Select the correct container
+const controller = new ControllerTomato(timer, render);
+
+/*
+import '../scss/index.scss';
+import './render.js';
+import './task.js';
+import './timer.js';
+*/
+/*
+let count = 0;
+const imp = ['default', 'important', 'so-so']
+document.querySelector('.button-importance').addEventListener('click', ({target}) => {
+  count += 1;
+  if (count >= imp.length) {
+    count = 0
+  }
+
+  for (let i = 0; i < imp.length; i++) {
+    if (count === i) {
+      target.classList.add(imp[i])
+    } else {
+      target.classList.remove(imp[i])
+    }
+  }
+})
+
+class TomatoTimer {
+  static instance;
+
+  constructor() {
+    if (TomatoTimer.instance) {
+      return TomatoTimer.instance;
+    }
+    TomatoTimer.instance = this;
+
+    this.time_to_complete = 25;
+    this.pause_time = 5;
+    this.long_pause_time = 15;
+    this.tasks = [];
+    this.active_task = null;
+
+    return this;
+  }
+
+  addTask(task) {
+    this.tasks.push(task);
+  }
+
+  activateTask(taskId) {
+    this.active_task = this.tasks.find(task => task.id === taskId);
+  }
+
+  runTask() {
+    if (this.active_task) {
+      console.log(`Running task: ${this.active_task.text}`);
+      // Add your logic to start the task timer and handle pauses
+    } else {
+      console.log("No active task.");
+    }
+  }
+}
+
+class Task {
+  constructor(text, importance) {
+    this.id = this.generateUniqueId();
+    this.text = text;
+    this.count = 0;
+    this.importance = importance;
+  }
+
+  generateUniqueId() {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  }
+}
+
+class ImportantTask extends Task {
+  constructor(text) {
+    super(text, 'important');
+  }
+}
+
+class StandardTask extends Task {
+  constructor(text) {
+    super(text, 'default');
+  }
+}
+
+class UnimportantTask extends Task {
+  constructor(text) {
+    super(text, 'so-so');
+  }
+}
+
+class RenderTomato {
+  constructor(container) {
+    this.container = container;
+  }
+
+  renderTaskList(tasks) {
+    this.container.innerHTML = '';
+
+    const taskList = document.createElement('ul');
+    taskList.className = 'pomodoro-tasks__quest-tasks';
+    tasks.forEach(task => {
+      const taskItem = document.createElement('li');
+      taskItem.className = `pomodoro-tasks__list-task ${task.importance}`;
+      taskItem.innerHTML = `
+        <span class="count-number">${task.count}</span>
+        <button class="pomodoro-tasks__task-text">${task.text}</button>
+        <button class="pomodoro-tasks__task-button"></button>
+      `;
+      taskList.appendChild(taskItem);
+    });
+    this.container.appendChild(taskList);
+  }
+
+  renderTaskForm(addTaskHandler) {
+    const taskForm = document.createElement('form');
+    taskForm.className = 'task-form';
+    taskForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const taskNameInput = document.getElementById('task-name');
+      const taskName = taskNameInput.value;
+      addTaskHandler(taskName);
+      taskNameInput.value = '';
+    });
+
+    const taskNameInput = document.createElement('input');
+    taskNameInput.className = 'task-name input-primary';
+    taskNameInput.type = 'text';
+    taskNameInput.name = 'task-name';
+    taskNameInput.id = 'task-name';
+    taskNameInput.placeholder = 'Task name';
+
+    const importanceButton = document.createElement('button');
+    importanceButton.className = 'button button-importance default';
+    importanceButton.type = 'button';
+    importanceButton.setAttribute('aria-label', 'Set importance');
+
+    const addButton = document.createElement('button');
+    addButton.className = 'button button-primary task-form__add-button';
+    addButton.type = 'submit';
+    addButton.textContent = 'Add';
+
+    taskForm.appendChild(taskNameInput);
+    taskForm.appendChild(importanceButton);
+    taskForm.appendChild(addButton);
+    this.container.appendChild(taskForm);
+  }
+}
+
+class ControllerTomato {
+  constructor(timer, render) {
+    this.timer = timer;
+    this.render = render;
+    this.taskForm = document.querySelector('.task-form');
+    this.taskNameInput = document.getElementById('task-name');
+    this.taskList = document.querySelector('.pomodoro-tasks__quest-tasks');
+
+    this.taskForm.addEventListener('submit', this.handleAddTask.bind(this));
+  }
+
+  handleAddTask(event) {
+    event.preventDefault();
+    const taskName = this.taskNameInput.value;
+    const importanceClass = document.querySelector('.button-importance').classList;
+
+    let task;
+    if (importanceClass.contains('important')) {
+      task = new ImportantTask(taskName);
+    } else if (importanceClass.contains('so-so')) {
+      task = new UnimportantTask(taskName);
+    } else {
+      task = new StandardTask(taskName);
+    }
+
+    this.timer.addTask(task);
+    this.render.renderTaskList(this.timer.tasks);
+    this.taskNameInput.value = '';
+  }
+}
+
+// Usage example
+const timer = new TomatoTimer();
+const render = new RenderTomato(document.querySelector('.pomodoro-tasks__quest-list'));
+const controller = new ControllerTomato(timer, render);
+
+*/
