@@ -15,7 +15,6 @@ export class TomatoTimer {
   runTask() {
     if (this.active_task) {
       console.log(`Running task: ${this.active_task.text}`);
-      
     } else {
       console.log('No active task.');
     }

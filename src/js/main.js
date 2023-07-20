@@ -1,7 +1,5 @@
 import '../scss/index.scss';
-
-import {TomatoTimer} from './timer.js'
-import {RenderTomato,ControllerTomato} from './render.js'
+import {Tomato} from './tomato.js'
 
 
 let count = 0;
@@ -21,14 +19,4 @@ document.querySelector('.button-importance').addEventListener('click', ({ target
   }
 });
 
-
-
-
-
-
-
-const timer = new TomatoTimer();
-const containerElement = document.querySelector('.pomodoro-tasks');
-const render = new RenderTomato(containerElement);
-const controller = new ControllerTomato(timer, render);
-
+const tomato = new Tomato();
